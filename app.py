@@ -28,7 +28,7 @@ def split_landscape_pdf(file_data):
 st.set_page_config(page_title="Razor tongue", layout="centered")
 st.title("🖨️ Splitte dobbeltsider i PDF")
 
-uploaded_file = st.file_uploader("Last opp en PDF med dobbeltsider (landskap)", type=["pdf"])
+uploaded_file = st.file_uploader("Last opp en PDF med dobbeltsider (landskapformat)", type=["pdf"])
 
 if uploaded_file:
     with st.spinner("Behandler PDF..."):
