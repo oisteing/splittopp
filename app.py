@@ -25,7 +25,7 @@ def split_landscape_pdf(file_data):
     return output_bytes
 
 # --- Streamlit UI ---
-st.set_page_config(page_title="PDF-splitter", layout="centered")
+st.set_page_config(page_title="Razor tongue", layout="centered")
 st.title("🖨️ Splitte dobbeltsider i PDF")
 
 uploaded_file = st.file_uploader("Last opp en PDF med dobbeltsider (landskap)", type=["pdf"])
