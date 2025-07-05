@@ -5,7 +5,7 @@ import io
 
 def rotate_if_portrait(page):
     if page.rect.height > page.rect.width:
-        page.set_rotation(90)  # roter 90 grader med klokka
+        page.set_rotation(90)  # roter 90 grader hvis portrett
     return page
 
 def split_landscape_pdf(file_data, split_percent):
@@ -13,18 +13,18 @@ def split_landscape_pdf(file_data, split_percent):
     output_pdf = fitz.open()
 
     for page in input_pdf:
-        # Automatisk roter om det er portrett
+        # Automatisk roter hvis siden er portrett
         page = rotate_if_portrait(page)
         width = page.rect.width
         height = page.rect.height
         split_x = width * (split_percent / 100)
 
-        # Venstre
+        # Venstre side
         left_rect = fitz.Rect(0, 0, split_x, height)
         left_page = output_pdf.new_page(width=left_rect.width, height=left_rect.height)
         left_page.show_pdf_page(left_page.rect, input_pdf, page.number, clip=left_rect)
 
-        # Høyre
+        # Høyre side
         right_rect = fitz.Rect(split_x, 0, width, height)
         right_page = output_pdf.new_page(width=right_rect.width, height=right_rect.height)
         right_page.show_pdf_page(right_page.rect, input_pdf, page.number, clip=right_rect)
@@ -35,13 +35,18 @@ def generate_preview(file_data, split_percent):
     doc = fitz.open(stream=file_data, filetype="pdf")
     page = rotate_if_portrait(doc[0])
     width = page.rect.width
-    split_x = int(width * (split_percent / 100))
+    split_x = width * (split_percent / 100)
 
     pix = page.get_pixmap(dpi=150)
     img = Image.open(io.BytesIO(pix.tobytes("png")))
 
+    # Skaler til bildekoordinater
+    scale_factor = img.width / page.rect.width
+    split_x_px = int(split_x * scale_factor)
+
+    # Tegn rød strek
     draw = ImageDraw.Draw(img)
-    draw.line([(split_x, 0), (split_x, img.height)], fill="red", width=3)
+    draw.line([(split_x_px, 0), (split_x_px, img.height)], fill="red", width=3)
 
     return img
 
@@ -66,7 +71,7 @@ if uploaded_file:
     st.subheader("🔍 Forhåndsvisning av første side")
     try:
         preview_img = generate_preview(file_bytes, split_percent)
-        st.image(preview_img, caption="Rød strek viser hvor siden blir delt", use_column_width=True)
+        st.image(preview_img, caption="Rød strek viser hvor siden blir delt", use_container_width=True)
     except Exception as e:
         st.error(f"Klarte ikke å vise forhåndsvisning: {e}")
 
